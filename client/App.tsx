@@ -1,9 +1,9 @@
-import React, { Component } from "react";
-import { render } from "react-dom";
-import socketConstructor from "socket.io-client";
+import React, { Component } from 'react';
+import { render } from 'react-dom';
+import socketConstructor from 'socket.io-client';
 
 const socket = socketConstructor();
-socket.emit("join");
+socket.emit('join');
 
 class App extends Component {
   render() {
@@ -11,4 +11,4 @@ class App extends Component {
   }
 }
 
-render(<App />, document.getElementById("react-root"));
+render(<App />, document.getElementById('react-root'));

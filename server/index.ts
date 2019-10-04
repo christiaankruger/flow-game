@@ -1,13 +1,13 @@
-import Koa from "koa";
-import Router from "koa-router";
+import Koa from 'koa';
+import Router from 'koa-router';
 ///@ts-ignore
-import socketConstructor from "koa-socket-2";
-import { Server } from "socket.io";
-import fs from "fs";
-import path from "path";
-import send from "koa-send";
+import socketConstructor from 'koa-socket-2';
+import { Server } from 'socket.io';
+import fs from 'fs';
+import path from 'path';
+import send from 'koa-send';
 
-import { getEnv } from "./env";
+import { getEnv } from './env';
 
 const app = new Koa();
 const router = new Router();
@@ -16,7 +16,7 @@ const env = getEnv();
 
 socket.attach(app);
 
-socket.on("connect", socket => {
+socket.on('connect', socket => {
   console.log(`Got a bite!`);
 });
 
@@ -24,7 +24,7 @@ socket.on("connect", socket => {
 
 app.use(async (ctx, next) => {
   await next();
-  const rt = ctx.response.get("X-Response-Time");
+  const rt = ctx.response.get('X-Response-Time');
   console.log(`${ctx.method} ${ctx.url} - ${rt}`);
 });
 
@@ -34,18 +34,18 @@ app.use(async (ctx, next) => {
   const start = Date.now();
   await next();
   const ms = Date.now() - start;
-  ctx.set("X-Response-Time", `${ms}ms`);
+  ctx.set('X-Response-Time', `${ms}ms`);
 });
 
 // Static file server:
 app.use(async (ctx, next) => {
-  if (ctx.path === "/") {
-    await send(ctx, "/dist/index.html", {
-      root: path.resolve(__dirname, "..")
+  if (ctx.path === '/') {
+    await send(ctx, '/dist/index.html', {
+      root: path.resolve(__dirname, '..')
     });
   }
-  if (ctx.path.startsWith("/dist/")) {
-    await send(ctx, ctx.path, { root: path.resolve(__dirname, "..") });
+  if (ctx.path.startsWith('/dist/')) {
+    await send(ctx, ctx.path, { root: path.resolve(__dirname, '..') });
   }
   await next();
 });
