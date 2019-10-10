@@ -1,0 +1,14 @@
+:root {
+  --font-main: 'PT Serif';
+}
+
+* {
+  font-family: 'Lato';
+}
+
+.flow-captain {
+  &__container {
+    height: 100vh;
+    width: 100vw;
+  }
+}
