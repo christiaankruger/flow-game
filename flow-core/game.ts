@@ -2,34 +2,57 @@ import { Module, IRoute, ICity } from './types';
 import { Player } from './player';
 import { RouteModule } from './route_module';
 import { Grid } from './grid';
+import { CityModule } from './city_module';
 
 const DEFAULT_SQUARE_SIZE = 25;
 
+export interface IModuleRegistration {
+  name: string;
+  module: Module;
+}
+
+export interface CoreModules {
+  city: CityModule;
+  route: RouteModule;
+}
+
 export class Game {
-  private modules: Module[] = [];
+  private adhocModules: IModuleRegistration[] = [];
   players: Player[] = [];
   routes: IRoute[] = [];
   cities: ICity[] = [];
   grid: Grid;
 
   constructor(
+    public coreModules: CoreModules = {
+      city: new CityModule(),
+      route: new RouteModule()
+    },
     rows: number = DEFAULT_SQUARE_SIZE,
     columns: number = DEFAULT_SQUARE_SIZE
   ) {
     this.grid = new Grid(rows, columns);
   }
 
-  registerModule(module: Module) {
-    this.modules.push(module);
+  registerModule(moduleRegistration: IModuleRegistration) {
+    this.adhocModules.push(moduleRegistration);
   }
 
   tick() {
-    this.modules.forEach(module => module.tick(this));
+    // 1. Tick all the core modules
+    Object.values(this.coreModules).forEach(module => module.tick(this));
+    // 2. Tick all the adhoc modules
+    this.adhocModules.forEach(registeredModule =>
+      registeredModule.module.tick(this)
+    );
   }
 }
 
-export const createGameWithModules = () => {
+export const createGameWithSeeds = () => {
   const game = new Game();
-  game.registerModule(new RouteModule());
+
+  game.cities = CityModule.SeedCities(5, game);
+  game.routes = RouteModule.SeedRoutes(3, game);
+
   return game;
 };

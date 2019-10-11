@@ -1,4 +1,4 @@
-import { createGameWithModules, Game } from '../game';
+import { Game } from '../game';
 import { Module } from '../types';
 import { Player } from '../player';
 
@@ -17,10 +17,16 @@ class PlayerNameChangeModule implements Module {
 }
 
 test('Module alters game state', () => {
-  const game = createGameWithModules();
+  const game = new Game();
   // Nonsense modules
-  game.registerModule(new PlayerAddModule());
-  game.registerModule(new PlayerNameChangeModule());
+  game.registerModule({
+    name: 'player-add',
+    module: new PlayerAddModule()
+  });
+  game.registerModule({
+    name: 'player-change',
+    module: new PlayerNameChangeModule()
+  });
   game.tick();
 
   expect(game.players.length).toBe(1);
