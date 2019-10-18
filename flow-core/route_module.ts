@@ -1,13 +1,17 @@
-import { IModule, Module, IRoute, ICity } from './types';
+import { Module, IRoute, ICity, TCoordinates } from './types';
 import { Game } from './game';
 import { sampleSize, sample } from 'lodash';
 import { range, equals } from 'ramda';
+import { buildUnionFindPerPlayer } from './grid_union_find';
 
 // Responsibilities:
 // Give I(r) to players
 // Take O(r) from players
 // Tick down on routes, expire them
+// Find routes nobody is building for, remove them
 // Generate new routes periodically
+
+const EXPENSE_PER_BLOCK = 1;
 
 export class RouteModule implements Module {
   static GenerateNewRoute(existingRoutes: IRoute[], game: Game): IRoute {
@@ -35,7 +39,62 @@ export class RouteModule implements Module {
     return result;
   }
 
-  tick(game: Game) {}
+  tick(game: Game) {
+    doRouteIncomeAndExpenses(game);
+  }
+}
+
+function doRouteIncomeAndExpenses(game: Game) {
+  // Build a UnionFind per player
+  const map = buildUnionFindPerPlayer(game);
+
+  // Go through each route
+  for (const route of game.routes) {
+    const fromCoordinates = game.cityByName(route.from_city_name)!.coordinates;
+    const toCoordinates = game.cityByName(route.to_city_name)!.coordinates;
+
+    // Count how many players made the route
+    // CLUNKY: Make better
+    let count = 0;
+    for (const playerId in map) {
+      const UF = map[playerId];
+      if (UF.find(fromCoordinates, toCoordinates)) {
+        count++;
+      }
+    }
+
+    for (const playerId in map) {
+      const UF = map[playerId];
+      if (UF.find(fromCoordinates, toCoordinates)) {
+        // Player has this route
+        const player = game.playerById(playerId)!;
+        player.addTransaction({
+          description: `Income: ${route.from_city_name} to ${
+            route.to_city_name
+          }${count > 1 ? ' (shared)' : ''}`,
+          amount: route.income / count
+        });
+      }
+    }
+
+    // Tick route down to expiry
+    route.expiring_in -= count;
+    // TODO: Remove if 0
+  }
+
+  // Expenses: $1 per block
+  for (const playerId in map) {
+    const UF = map[playerId];
+    const player = game.playerById(playerId)!;
+
+    const numberOfBlocks = UF.registeredCount() - game.cities.length;
+    if (numberOfBlocks > 0) {
+      player.addTransaction({
+        description: `Maintenance for ${numberOfBlocks} blocks`,
+        amount: numberOfBlocks * EXPENSE_PER_BLOCK * -1
+      });
+    }
+  }
 }
 
 function routeExists(
@@ -62,7 +121,6 @@ export function distance(cityA: ICity, cityB: ICity): number {
   return distanceByCoordinates(cityA.coordinates, cityB.coordinates);
 }
 
-type TCoordinates = { row: number; column: number };
 export function distanceByCoordinates(
   coordinatesA: TCoordinates,
   coordinatesB: TCoordinates
