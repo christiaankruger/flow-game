@@ -50,3 +50,5 @@ export interface IRoute {
   income: number;
   expiring_in: number;
 }
+
+export type TCoordinates = { row: number; column: number };

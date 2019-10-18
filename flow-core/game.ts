@@ -38,6 +38,14 @@ export class Game {
     this.adhocModules.push(moduleRegistration);
   }
 
+  cityByName(name: string): ICity | undefined {
+    return this.cities.find(c => c.name === name);
+  }
+
+  playerById(id: string): Player | undefined {
+    return this.players.find(p => p.id === id);
+  }
+
   tick() {
     // 1. Tick all the core modules
     Object.values(this.coreModules).forEach(module => module.tick(this));

@@ -34,6 +34,10 @@ export class UnionFind<T> {
     return parent;
   }
 
+  registeredCount(): number {
+    return this.roots.length;
+  }
+
   register(item: T) {
     if (this.roots.length === this.size) {
       throw Error(`Full: Already ${this.size} items`);
@@ -44,6 +48,15 @@ export class UnionFind<T> {
     this.itemToIndexMap[serialized] = newIndex;
     this.roots.push(newIndex);
     this.sizes.push(1);
+  }
+
+  unionIfExists(a: T, b: T): void {
+    // Perform the union if both a and b exists
+    try {
+      this.union(a, b);
+    } catch {
+      // Nothing. We don't care if it didn't work
+    }
   }
 
   union(a: T, b: T) {
