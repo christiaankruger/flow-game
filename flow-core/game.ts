@@ -4,7 +4,7 @@ import { RouteModule } from './modules/route_module';
 import { Grid } from './grid';
 import { CityModule } from './modules/city_module';
 
-const DEFAULT_SQUARE_SIZE = 25;
+export const DEFAULT_SQUARE_SIZE = 25;
 
 export interface IModuleRegistration {
   name: string;

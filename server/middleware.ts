@@ -33,8 +33,14 @@ const OrderedMiddleware: MiddlewareType[] = [
   // Static file server
   async (ctx, next) => {
     if (ctx.path === '/') {
-      await send(ctx, '/dist/index.html', {
-        root: path.resolve(__dirname, '..')
+      await send(ctx, '/index.html', {
+        root: path.resolve(__dirname, '..', 'dist')
+      });
+    }
+
+    if (ctx.path === '/test') {
+      await send(ctx, '/index_test.html', {
+        root: path.resolve(__dirname, '..', 'dist')
       });
     }
 

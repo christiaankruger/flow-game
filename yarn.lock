@@ -8717,6 +8717,11 @@ only@~0.0.2:
   resolved "https://registry.yarnpkg.com/only/-/only-0.0.2.tgz#2afde84d03e50b9a8edc444e30610a70295edfb4"
   integrity sha1-Kv3oTQPlC5qO3EROMGEKcCle37Q=
 
+open-simplex-noise@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/open-simplex-noise/-/open-simplex-noise-1.6.0.tgz#5c658f64cb6922ba869a9ce75937b0910bc5f4a2"
+  integrity sha512-/oLrC7PdpDDr3c5yM13qaAA5/BdFSRVk/iXnBkGKCahOPeDUVY/wIQQgdPGdUqMneMwL557J3hxcjLuo9hHDWw==
+
 open@^6.1.0, open@^6.3.0:
   version "6.4.0"
   resolved "https://registry.yarnpkg.com/open/-/open-6.4.0.tgz#5c13e96d0dc894686164f18965ecfe889ecfc8a9"

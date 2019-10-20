@@ -9,6 +9,8 @@ import send from 'koa-send';
 
 import { getEnv } from './env';
 import { applyMiddleware } from './middleware';
+import { Grid } from '../flow-core/grid';
+import { DEFAULT_SQUARE_SIZE } from '../flow-core/game';
 
 const app = new Koa();
 const router = new Router();
@@ -30,6 +32,11 @@ router.post('/player', (ctx, next) => {
   console.log(`Registering ${name}`);
 
   ctx.status = 200;
+});
+
+router.post('/test_grid', (ctx, next) => {
+  const grid = new Grid(DEFAULT_SQUARE_SIZE, DEFAULT_SQUARE_SIZE);
+  ctx.body = grid;
 });
 
 app.listen(env.port, () => {
