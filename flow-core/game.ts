@@ -1,8 +1,8 @@
 import { Module, IRoute, ICity } from './types';
 import { Player } from './player';
-import { RouteModule } from './route_module';
+import { RouteModule } from './modules/route_module';
 import { Grid } from './grid';
-import { CityModule } from './city_module';
+import { CityModule } from './modules/city_module';
 
 const DEFAULT_SQUARE_SIZE = 25;
 
@@ -20,7 +20,7 @@ export class Game {
   private adhocModules: IModuleRegistration[] = [];
   players: Player[] = [];
   routes: IRoute[] = [];
-  cities: ICity[] = [];
+  readonly cities: ICity[] = [];
   grid: Grid;
 
   constructor(
@@ -36,6 +36,19 @@ export class Game {
 
   registerModule(moduleRegistration: IModuleRegistration) {
     this.adhocModules.push(moduleRegistration);
+  }
+
+  addCity(city: ICity) {
+    this.cities.push(city);
+    this.grid.set(
+      {
+        belongsTo: {
+          cityName: city.name
+        }
+      },
+      city.coordinates.row,
+      city.coordinates.column
+    );
   }
 
   cityByName(name: string): ICity | undefined {
@@ -59,7 +72,11 @@ export class Game {
 export const createGameWithSeeds = () => {
   const game = new Game();
 
-  game.cities = CityModule.SeedCities(5, game);
+  const cities = CityModule.SeedCities(5, game);
+  for (let city of cities) {
+    game.addCity(city);
+  }
+
   game.routes = RouteModule.SeedRoutes(3, game);
 
   return game;

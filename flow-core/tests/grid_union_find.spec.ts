@@ -1,15 +1,15 @@
 // TODO: Write a (much) better spec
 
-import { CityModule } from '../city_module';
+import { CityModule } from '../modules/city_module';
 import { Game } from '../game';
-import { RouteModule, distanceByCoordinates } from '../route_module';
+import { RouteModule, distanceByCoordinates } from '../modules/route_module';
 import { buildUnionFindPerPlayer } from '../grid_union_find';
 import { Player } from '../player';
 import { TCoordinates } from '../types';
 import { Grid } from '../grid';
 
 const dummyGame = new Game();
-dummyGame.cities = [
+const cities = [
   {
     name: 'A0',
     coordinates: {
@@ -53,6 +53,11 @@ dummyGame.cities = [
     }
   }
 ];
+
+for (let city of cities) {
+  dummyGame.addCity(city);
+}
+
 dummyGame.players.push(new Player({ id: 'RED', name: 'RED' }));
 dummyGame.players.push(new Player({ id: 'GREEN', name: 'GREEN' }));
 dummyGame.players.push(new Player({ id: 'BLUE', name: 'BLUE' }));
@@ -73,6 +78,7 @@ describe('Grid x Union-Find', () => {
     // Test individual coordinates
 
     const UFRed = map['RED'];
+    console.log(UFRed);
     expect(UFRed.registeredCount()).toBe(3 + 6);
     const redCombinations = combinations(
       RED_COORDINATE_ARRAY.map(arrayToCoordinate)
@@ -148,7 +154,9 @@ function assignToPlayer(coordinateArray: number[][], playerId: string) {
   coordinateArray.map(arrayToCoordinate).forEach(coordinate => {
     dummyGame.grid.set(
       {
-        player_id: playerId
+        belongsTo: {
+          playerId
+        }
       },
       coordinate.row,
       coordinate.column

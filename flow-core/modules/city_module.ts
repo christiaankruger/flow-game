@@ -1,8 +1,8 @@
-import { Module, ICity } from './types';
-import { Game } from './game';
+import { Module, ICity } from '../types';
+import { Game } from '../game';
 import { sampleSize, sample } from 'lodash';
 import { range } from 'ramda';
-import { allCities } from './data/cities';
+import { allCities } from '../data/cities';
 
 export class CityModule implements Module {
   static GenerateNewCity(existingCities: ICity[], game: Game): ICity {

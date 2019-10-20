@@ -1,5 +1,10 @@
 import { Game } from './game';
 
+export enum CityType {
+  CITY,
+  CAPITAL
+}
+
 export interface IModule {
   tick: (game: Game) => void;
 }
@@ -24,6 +29,7 @@ export interface ITransaction {
 
 export interface ICity {
   name: string;
+  type?: CityType;
 
   // Coordinates
   coordinates: {
@@ -33,9 +39,22 @@ export interface ICity {
 }
 
 export interface IBlock {
-  // Better way?
-  player_id?: string;
+  belongsTo?: BelongsToType;
 }
+
+export type BelongsToType = ByPlayer | ByCity | ByTerrain;
+
+export type ByPlayer = {
+  playerId: string;
+};
+
+export type ByCity = {
+  cityName: string;
+};
+
+export type ByTerrain = {
+  terrainType: 'mountain';
+};
 
 export interface IGrid {
   blocks: IBlock[][];

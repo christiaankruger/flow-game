@@ -1,6 +1,7 @@
 import { Game } from './game';
 import { UnionFind } from './util/union-find';
 import { TCoordinates } from './types';
+import { belongsToPlayer } from './util/misc';
 
 type TUnionFindPerPlayerResult = {
   [playerId: string]: UnionFind<TCoordinates>;
@@ -27,7 +28,12 @@ export const buildUnionFindPerPlayer = (
       const row = blocks[i];
       for (let j = 0; j < row.length; j++) {
         const block = row[j];
-        if (block.player_id === player.id) {
+        if (!block.belongsTo || !belongsToPlayer(block.belongsTo)) {
+          // Early exit
+          continue;
+        }
+
+        if (block.belongsTo.playerId === player.id) {
           // Block belongs to this player!
           const coordinates: TCoordinates = {
             row: i,

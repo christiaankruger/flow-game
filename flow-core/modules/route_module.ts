@@ -1,8 +1,8 @@
-import { Module, IRoute, ICity, TCoordinates } from './types';
-import { Game } from './game';
+import { Module, IRoute, ICity, TCoordinates } from '../types';
+import { Game } from '../game';
 import { sampleSize, sample } from 'lodash';
 import { range, equals } from 'ramda';
-import { buildUnionFindPerPlayer } from './grid_union_find';
+import { buildUnionFindPerPlayer } from '../grid_union_find';
 
 // Responsibilities:
 // Give I(r) to players

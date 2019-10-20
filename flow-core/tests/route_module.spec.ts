@@ -1,9 +1,12 @@
-import { CityModule } from '../city_module';
+import { CityModule } from '../modules/city_module';
 import { Game } from '../game';
-import { RouteModule, distanceByCoordinates } from '../route_module';
+import { RouteModule, distanceByCoordinates } from '../modules/route_module';
 
 const dummyGame = new Game();
-dummyGame.cities = CityModule.SeedCities(10, dummyGame);
+const cities = CityModule.SeedCities(10, dummyGame);
+for (let city of cities) {
+  dummyGame.addCity(city);
+}
 
 describe('Route Module', () => {
   describe('Seeding', () => {

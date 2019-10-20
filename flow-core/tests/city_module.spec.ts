@@ -1,4 +1,4 @@
-import { CityModule } from '../city_module';
+import { CityModule } from '../modules/city_module';
 import { Game } from '../game';
 
 const dummyGame = new Game();
