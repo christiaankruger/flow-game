@@ -25,6 +25,8 @@ export class GameMap {
   app: Application;
   viewport: Viewport;
   grid?: Grid;
+  gridVersion: number = 0;
+  drawnGridVersion: number = 0;
 
   constructor(
     gameMapProps: Partial<GameMapProps>,
@@ -48,23 +50,18 @@ export class GameMap {
       screenHeight: viewportProps.screenWidth,
       worldWidth,
       worldHeight,
+      // So that scrolling off-view doesn't make the viewport scroll
+      divWheel: this.app.renderer.view,
       stopPropagation: true,
       // Stops chrome swipe left from triggering
       passiveWheel: false,
-
       interaction: this.app.renderer.plugins.interaction // the interaction module is important for wheel to work properly when renderer.view is placed or scaled
     } as any);
 
     this.viewport
       .drag()
       .decelerate()
-      .clamp({
-        top: -16,
-        left: -16,
-        bottom: true,
-        right: true
-      });
-
+      .wheel();
     this.app.stage.addChild(this.viewport);
   }
 
@@ -75,17 +72,21 @@ export class GameMap {
     // Setup game loop here too
     this.app.ticker.add(delta => {
       if (this.grid) {
-        pixiGameTick({
-          delta,
-          grid: this.grid,
-          app: this.app,
-          viewport: this.viewport
-        });
+        if (this.drawnGridVersion !== this.gridVersion) {
+          pixiGameTick({
+            delta,
+            grid: this.grid,
+            app: this.app,
+            viewport: this.viewport
+          });
+          this.drawnGridVersion = this.gridVersion;
+        }
       }
     });
   }
 
   setGrid(grid: Grid) {
+    this.gridVersion++;
     this.grid = grid;
   }
 }

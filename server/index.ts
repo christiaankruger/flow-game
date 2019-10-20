@@ -10,7 +10,9 @@ import send from 'koa-send';
 import { getEnv } from './env';
 import { applyMiddleware } from './middleware';
 import { Grid } from '../flow-core/grid';
-import { DEFAULT_SQUARE_SIZE } from '../flow-core/game';
+import { DEFAULT_SQUARE_SIZE, Game } from '../flow-core/game';
+import { terrainGenerator } from '../flow-core/terrain_generator';
+import { CityModule } from '../flow-core/modules/city_module';
 
 const app = new Koa();
 const router = new Router();
@@ -35,8 +37,16 @@ router.post('/player', (ctx, next) => {
 });
 
 router.post('/test_grid', (ctx, next) => {
-  const grid = new Grid(DEFAULT_SQUARE_SIZE, DEFAULT_SQUARE_SIZE);
-  ctx.body = grid;
+  const game = new Game();
+  game.grid = new Grid(DEFAULT_SQUARE_SIZE, DEFAULT_SQUARE_SIZE);
+  terrainGenerator(game.grid);
+
+  const cities = CityModule.SeedCities(10, game);
+  for (const city of cities) {
+    game.addCity(city);
+  }
+
+  ctx.body = game.grid;
 });
 
 app.listen(env.port, () => {

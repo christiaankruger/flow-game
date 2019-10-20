@@ -4,7 +4,7 @@ import { RouteModule } from './modules/route_module';
 import { Grid } from './grid';
 import { CityModule } from './modules/city_module';
 
-export const DEFAULT_SQUARE_SIZE = 25;
+export const DEFAULT_SQUARE_SIZE = 75;
 
 export interface IModuleRegistration {
   name: string;
@@ -39,16 +39,17 @@ export class Game {
   }
 
   addCity(city: ICity) {
+    const { row, column } = city.coordinates;
     this.cities.push(city);
-    this.grid.set(
-      {
-        belongsTo: {
-          cityName: city.name
-        }
-      },
-      city.coordinates.row,
-      city.coordinates.column
-    );
+    // Do this to maintain terrain
+    const currentBlock = this.grid.blocks[row][column] || {};
+    const newBlock = Object.assign({}, currentBlock, {
+      belongsTo: {
+        cityName: city.name
+      }
+    });
+
+    this.grid.set(newBlock, row, column);
   }
 
   cityByName(name: string): ICity | undefined {

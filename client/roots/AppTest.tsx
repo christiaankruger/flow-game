@@ -18,8 +18,8 @@ const BEM = createBemHelper('test');
 const gameMap = new GameMap(
   {},
   {
-    screenHeight: 500,
-    screenWidth: 500
+    screenHeight: window.innerHeight,
+    screenWidth: window.innerWidth / 2
   }
 );
 
@@ -46,6 +46,7 @@ class TestApp extends Component {
   render() {
     return (
       <div>
+        <button onClick={this.updateGrid}>Update</button>
         <div className={BEM('code')}>
           <pre>{JSON.stringify(this.grid, null, 2)}</pre>
         </div>
