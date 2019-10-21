@@ -42,6 +42,8 @@ export class GameMap {
     const worldWidth = gridWidth * squareBlockSize;
 
     this.app = new Application({
+      height: 900,
+      width: 800,
       antialias: true
     });
 

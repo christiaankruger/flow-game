@@ -1,4 +1,4 @@
-import { Application, Container, Sprite, Texture } from 'pixi.js';
+import { Application, Container, Sprite, Texture, Text } from 'pixi.js';
 import { Viewport } from 'pixi-viewport';
 import { Assets } from './assets/assets';
 import { Grid } from '../../flow-core/grid';
@@ -13,7 +13,7 @@ export interface GameLoopProps {
   grid: Grid;
 }
 
-const ORDER = ['ice', 'ground', 'sand', 'grass'];
+const ORDER = ['ice', 'ground', 'grass', 'sand', 'ocean'];
 
 let currentGridHash: string | undefined = undefined;
 
@@ -32,24 +32,22 @@ const buildGrid = (props: GameLoopProps) => {
       container.x = j * 64;
 
       const block = grid.blocks[i][j];
-      let sprite = fromTerrain(block.terrain || 'grass');
-
-      if (block.terrain === 'ground') {
-        // Only doing directional ground for now
-        const myDirection = direction(grid, i, j);
-        if (myDirection) {
+      let terrain = block.terrain || 'grass';
+      let sprite = fromTerrain(terrain);
+      const myDirection = direction(grid, i, j);
+      if (myDirection) {
+        if (myDirection.element === 'grass') {
           sprite = grassFull();
-          sprite.addChild(directionalTerrain('ground', myDirection));
+        } else if (myDirection.element === 'sand') {
+          sprite = sandFull();
+        } else if (myDirection.element === 'ground') {
+          sprite = groundFull();
+        } else if (myDirection.element === 'ice') {
+          sprite = iceFull();
+        } else if (myDirection.element === 'ocean') {
+          sprite = oceanFull();
         }
-      }
-
-      if (block.terrain === 'sand') {
-        // Only doing directional ground for now
-        const myDirection = direction(grid, i, j);
-        if (myDirection) {
-          sprite = grassFull();
-          sprite.addChild(directionalTerrain('sand', myDirection));
-        }
+        sprite.addChild(directionalTerrain(terrain, myDirection.direction));
       }
 
       if (block.belongsTo) {
@@ -63,6 +61,19 @@ const buildGrid = (props: GameLoopProps) => {
         }
         if (belongsToCity(block.belongsTo)) {
           sprite.addChild(city());
+          const nameContainer = new Container();
+          nameContainer.y = (i - 1) * 64;
+          nameContainer.x = j * 64;
+          const name = new Text(block.belongsTo.cityName, {
+            fontFamily: 'Lato'
+            // fontSize: 12,
+            // fill: 0xff1010,
+            // align: 'center'
+          });
+          name.anchor.y = -0.5;
+
+          nameContainer.addChild(name);
+          viewport.addChild(nameContainer);
         }
       }
       container.addChild(sprite);
@@ -77,6 +88,14 @@ const grassFull = () => {
 
 const sandFull = () => {
   return new Sprite(Texture.from(Assets.Sand.Full));
+};
+
+const groundFull = () => {
+  return new Sprite(Texture.from(Assets.Ground.Full));
+};
+
+const iceFull = () => {
+  return new Sprite(Texture.from(Assets.Ice.Full));
 };
 
 const rock = () => {
@@ -127,7 +146,19 @@ const direction = (grid: Grid, i: number, j: number) => {
   const blocks = grid.blocks;
   const base = blocks[i][j].terrain || 'grass';
 
-  const safeTerrain = (x?: IBlock) => (x ? x.terrain : undefined);
+  const safeOceanOrTerrain = (x?: IBlock) => {
+    if (!x) {
+      return undefined;
+    }
+    if (x.belongsTo) {
+      if (belongsToObstacle(x.belongsTo)) {
+        if (x.belongsTo.obstacleType === 'ocean') {
+          return 'ocean';
+        }
+      }
+    }
+    return x.terrain;
+  };
   const inRange = (x: number, lower: number, upper: number) =>
     lower <= x && x < upper;
 
@@ -154,46 +185,70 @@ const direction = (grid: Grid, i: number, j: number) => {
     return ORDER.indexOf(base) >= ORDER.indexOf(target);
   };
 
-  const UL = safeTerrain(safeBlock(i - 1, j - 1));
-  const U = safeTerrain(safeBlock(i - 1, j));
-  const UR = safeTerrain(safeBlock(i + 1, j + 1));
-  const L = safeTerrain(safeBlock(i, j - 1));
-  const R = safeTerrain(safeBlock(i, j + 1));
-  const DL = safeTerrain(safeBlock(i + 1, j - 1));
-  const D = safeTerrain(safeBlock(i + 1, j));
-  const DR = safeTerrain(safeBlock(i + 1, j + 1));
+  const UL = safeOceanOrTerrain(safeBlock(i - 1, j - 1));
+  const U = safeOceanOrTerrain(safeBlock(i - 1, j));
+  const UR = safeOceanOrTerrain(safeBlock(i + 1, j + 1));
+  const L = safeOceanOrTerrain(safeBlock(i, j - 1));
+  const R = safeOceanOrTerrain(safeBlock(i, j + 1));
+  const DL = safeOceanOrTerrain(safeBlock(i + 1, j - 1));
+  const D = safeOceanOrTerrain(safeBlock(i + 1, j));
+  const DR = safeOceanOrTerrain(safeBlock(i + 1, j + 1));
 
   if (higherThan(L)) {
     if (higherThan(D)) {
       if (lowerEqualThan(R)) {
-        return 'SW';
+        return {
+          direction: 'SW',
+          element: L
+        };
       }
     }
     if (higherThan(U)) {
       if (lowerEqualThan(R)) {
-        return 'NW';
+        return {
+          direction: 'NW',
+          element: L
+        };
       }
     }
-    return 'W';
+    return {
+      direction: 'W',
+      element: L
+    };
   }
 
   if (higherThan(U)) {
     if (higherThan(R)) {
       if (lowerEqualThan(L)) {
-        return 'NE';
+        return {
+          direction: 'NE',
+          element: U
+        };
       }
     }
-    return 'N';
+    return {
+      direction: 'N',
+      element: U
+    };
   }
 
   if (higherThan(D)) {
     if (higherThan(R)) {
-      return 'SE';
+      return {
+        direction: 'SE',
+        element: D
+      };
     }
-    return 'S';
+    return {
+      direction: 'S',
+      element: D
+    };
   }
 
   if (higherThan(R)) {
-    return 'E';
+    return {
+      direction: 'E',
+      element: R
+    };
   }
 };

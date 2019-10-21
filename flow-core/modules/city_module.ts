@@ -13,15 +13,16 @@ export class CityModule implements Module {
     }
 
     // Generate new coordinates
-    let row = sample(range(1)(game.grid.height + 1))!;
-    let column = sample(range(1)(game.grid.width + 1))!;
+    let row = sample(range(1)(game.grid.height - 1))!;
+    let column = sample(range(1)(game.grid.width - 1))!;
     while (
       existingCities.find(
         c => c.coordinates.row === row && c.coordinates.column === column
-      )
+      ) ||
+      !!game.grid.blocks[row][column].belongsTo
     ) {
-      row = sample(range(1, game.grid.height + 1))!;
-      column = sample(range(1, game.grid.width + 1))!;
+      row = sample(range(1, game.grid.height - 1))!;
+      column = sample(range(1, game.grid.width - 1))!;
     }
 
     return {
