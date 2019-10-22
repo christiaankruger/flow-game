@@ -13,7 +13,15 @@ export interface GameLoopProps {
   grid: Grid;
 }
 
-const ORDER = ['ice', 'ground', 'grass', 'sand', 'ocean'];
+const ORDER = [
+  'ice',
+  'ground',
+  'light-ground',
+  'grass',
+  'gravel',
+  'sand',
+  'ocean'
+];
 
 let currentGridHash: string | undefined = undefined;
 
@@ -33,27 +41,17 @@ const buildGrid = (props: GameLoopProps) => {
 
       const block = grid.blocks[i][j];
       let terrain = block.terrain || 'grass';
-      let sprite = fromTerrain(terrain);
+      let sprite = fullTile(terrain);
       const myDirection = direction(grid, i, j);
       if (myDirection) {
-        if (myDirection.element === 'grass') {
-          sprite = grassFull();
-        } else if (myDirection.element === 'sand') {
-          sprite = sandFull();
-        } else if (myDirection.element === 'ground') {
-          sprite = groundFull();
-        } else if (myDirection.element === 'ice') {
-          sprite = iceFull();
-        } else if (myDirection.element === 'ocean') {
-          sprite = oceanFull();
-        }
+        sprite = fullTile(myDirection.element as TerrainType | 'ocean');
         sprite.addChild(directionalTerrain(terrain, myDirection.direction));
       }
 
       if (block.belongsTo) {
         if (belongsToObstacle(block.belongsTo)) {
           if (block.belongsTo.obstacleType === 'trees') {
-            sprite.addChild(tree());
+            sprite.addChild(treeFor(terrain));
           }
           if (block.belongsTo.obstacleType === 'ocean') {
             sprite.addChild(oceanFull());
@@ -62,13 +60,10 @@ const buildGrid = (props: GameLoopProps) => {
         if (belongsToCity(block.belongsTo)) {
           sprite.addChild(city());
           const nameContainer = new Container();
-          nameContainer.y = (i - 1) * 64;
+          nameContainer.y = i === 0 ? (i + 1) * 64 : (i - 1) * 64;
           nameContainer.x = j * 64;
           const name = new Text(block.belongsTo.cityName, {
             fontFamily: 'Lato'
-            // fontSize: 12,
-            // fill: 0xff1010,
-            // align: 'center'
           });
           name.anchor.y = -0.5;
 
@@ -94,6 +89,14 @@ const groundFull = () => {
   return new Sprite(Texture.from(Assets.Ground.Full));
 };
 
+const lightGroundFull = () => {
+  return new Sprite(Texture.from(Assets.LightGround.Full));
+};
+
+const gravelFull = () => {
+  return new Sprite(Texture.from(Assets.Gravel.Full));
+};
+
 const iceFull = () => {
   return new Sprite(Texture.from(Assets.Ice.Full));
 };
@@ -109,6 +112,19 @@ const tree = () => {
   return new Sprite(Texture.from(Assets.Tree.Green));
 };
 
+const treeFor = (terrain: TerrainType) => {
+  if (terrain === 'sand' || terrain === 'gravel') {
+    return new Sprite(Texture.from(Assets.Tree.Cactus));
+  }
+  if (terrain === 'ground' || terrain === 'light-ground') {
+    return new Sprite(Texture.from(Assets.Tree.Purple));
+  }
+  if (terrain === 'ice') {
+    return new Sprite(Texture.from(Assets.Tree.Snowman));
+  }
+  return new Sprite(Texture.from(Assets.Tree.Green));
+};
+
 const city = () => {
   return new Sprite(Texture.from(Assets.City));
 };
@@ -117,34 +133,56 @@ const oceanFull = () => {
   return new Sprite(Texture.from(Assets.Ocean.Full));
 };
 
-const fromTerrain = (terrain: TerrainType): Sprite => {
-  if (terrain === 'grass') {
-    return new Sprite(Texture.from(Assets.Grass.Full));
+const fullTile = (block: TerrainType | 'ocean'): Sprite => {
+  if (block === 'grass') {
+    return grassFull();
   }
-  if (terrain === 'sand') {
-    return new Sprite(Texture.from(Assets.Sand.Full));
+  if (block === 'sand') {
+    return sandFull();
   }
-  if (terrain === 'ground') {
-    return new Sprite(Texture.from(Assets.Ground.Full));
+  if (block === 'ground') {
+    return groundFull();
   }
-  return new Sprite(Texture.from(Assets.Ice.Full));
+  if (block === 'light-ground') {
+    return lightGroundFull();
+  }
+  if (block === 'gravel') {
+    return gravelFull();
+  }
+  if (block === 'ice') {
+    return iceFull();
+  }
+  return oceanFull();
 };
 
 const directionalTerrain = (
   terrain: TerrainType,
   direction: string // Uppercase
 ): Sprite => {
-  const target = (Assets as any)[toCapCase(terrain)][direction.toUpperCase()];
+  const directionIndex =
+    direction === 'Full' ? 'Full' : direction.toUpperCase();
+  const target = (Assets as any)[toTerrainIndex(terrain)][directionIndex];
   return new Sprite(Texture.from(target));
 };
 
-const toCapCase = (word: string) => {
-  return [word[0].toUpperCase(), word.substring(1)].join('');
+const toTerrainIndex = (terrain: string) => {
+  // TODO: Better
+  if (terrain === 'light-ground') {
+    return 'LightGround';
+  }
+  return [terrain[0].toUpperCase(), terrain.substring(1)].join('');
 };
 
 const direction = (grid: Grid, i: number, j: number) => {
   const blocks = grid.blocks;
   const base = blocks[i][j].terrain || 'grass';
+
+  if (i === 0 || j === 0 || i === grid.height - 1 || j === grid.width - 1) {
+    return {
+      direction: 'Full',
+      element: base
+    };
+  }
 
   const safeOceanOrTerrain = (x?: IBlock) => {
     if (!x) {

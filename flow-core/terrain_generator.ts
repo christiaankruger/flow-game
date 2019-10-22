@@ -18,18 +18,21 @@ export const terrainGenerator = (grid: Grid): void => {
       const heightNoise = heightSimplex.noise2D(j / SCALE, i / SCALE);
       const temperatureNoise = temperatureSimplex.noise2D(j / SCALE, i / SCALE);
       const humidityNoise = humiditySimplex.noise2D(i / SCALE, j / SCALE);
-
+      const obstacleNoise = obstacleSimplex.noise2D(i / SCALE, j / SCALE);
       const block: IBlock = {};
-
-      if (heightNoise > 0.6) {
-        block.terrain = 'ice';
-      } else if (heightNoise < -0.6) {
+      if (heightNoise < -0.65) {
         block.belongsTo = { obstacleType: 'ocean' };
       }
 
       const terrain = biomeNoiseToTerrain(temperatureNoise, humidityNoise);
-      if (!block.terrain) {
-        block.terrain = terrain;
+      block.terrain = terrain;
+      if (!block.belongsTo) {
+        const obstacle = noiseToObstacle(obstacleNoise);
+        if (obstacle && Math.random() > 0.6) {
+          block.belongsTo = {
+            obstacleType: obstacle
+          } as ByObstacle;
+        }
       }
 
       grid.set(block, i, j);
@@ -48,36 +51,61 @@ export const terrainGenerator = (grid: Grid): void => {
       if (alone) {
         console.log('Found alone at ' + i + ', ' + j);
         // Turn me into one of my neighbours
-        grid.blocks[i][j].terrain = sample(NESWNeighbours);
+        grid.blocks[i][j].terrain = mode(NESWNeighbours);
       }
     }
   }
 };
 
 const getNESWNeighbours = (i: number, j: number): number[][] => {
-  let result = [];
-  result = [[i - 1, j], [i, j + 1], [i + 1, j], [i, j - 1]];
-  return result;
+  return [[i - 1, j], [i, j + 1], [i + 1, j], [i, j - 1]];
 };
 
 const biomeNoiseToTerrain = (
   temperatureNoise: number,
   humidityNoise: number
 ): TerrainType => {
-  if (temperatureNoise > 0.5) {
+  if (temperatureNoise > 0.6) {
     return 'sand';
   }
-  if (humidityNoise > -0.1) {
+
+  if (temperatureNoise < -0.6) {
+    return 'ice';
+  }
+
+  if (humidityNoise > 0) {
+    if (temperatureNoise > 0) {
+      return 'gravel';
+    }
     return 'grass';
   }
-  return 'ground';
+  if (temperatureNoise > 0) {
+    return 'ground';
+  }
+  return 'light-ground';
 };
 
-const noiseToObstacle = (noise: number): ByObstacle | {} => {
-  if (noise < 0.75) {
-    return {
-      obstacleType: 'trees'
-    };
+const noiseToObstacle = (noise: number): string | null => {
+  if (noise > 0.7) {
+    return 'trees';
   }
-  return {};
+  return null;
 };
+
+function mode(array: any[]) {
+  if (array.length == 0) return null;
+  const modeMap: { [key: string]: number } = {};
+  let maxEl = array[0];
+  let maxCount = 1;
+
+  for (var i = 0; i < array.length; i++) {
+    const el = array[i];
+    if (modeMap[el] == null) modeMap[el] = 1;
+    else modeMap[el]++;
+    if (modeMap[el] > maxCount) {
+      maxEl = el;
+      maxCount = modeMap[el];
+    }
+  }
+  return maxEl;
+}

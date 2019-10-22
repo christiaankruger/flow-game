@@ -53,7 +53,13 @@ export type ByCity = {
   cityName: string;
 };
 
-export type TerrainType = 'grass' | 'sand' | 'ground' | 'ice';
+export type TerrainType =
+  | 'grass'
+  | 'sand'
+  | 'ground'
+  | 'ice'
+  | 'light-ground'
+  | 'gravel';
 
 export type ByObstacle = {
   obstacleType: 'ocean' | 'trees';

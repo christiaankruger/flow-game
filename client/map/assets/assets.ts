@@ -1,5 +1,8 @@
 import TreePink from './base/tree__pink.png';
 import TreeGreen from './base/tree__green.png';
+import TreePurple from './base/tree__purple.png';
+import TreeCactus from './base/tree__cactus.png';
+import TreeSnowman from './base/tree__snowman.png';
 import OceanFull from './base/ocean__full.png';
 import Rock from './base/rock__default.png';
 
@@ -43,6 +46,26 @@ import GrassSW from './base/grass__sw.png';
 import GrassS from './base/grass__s.png';
 import GrassSE from './base/grass__se.png';
 
+import LightGroundFull from './base/light-ground__full.png';
+import LightGroundNW from './base/light-ground__nw.png';
+import LightGroundN from './base/light-ground__n.png';
+import LightGroundNE from './base/light-ground__ne.png';
+import LightGroundW from './base/light-ground__w.png';
+import LightGroundE from './base/light-ground__e.png';
+import LightGroundSW from './base/light-ground__sw.png';
+import LightGroundS from './base/light-ground__s.png';
+import LightGroundSE from './base/light-ground__se.png';
+
+import GravelFull from './base/gravel__full.png';
+import GravelNW from './base/gravel__nw.png';
+import GravelN from './base/gravel__n.png';
+import GravelNE from './base/gravel__ne.png';
+import GravelW from './base/gravel__w.png';
+import GravelE from './base/gravel__e.png';
+import GravelSW from './base/gravel__sw.png';
+import GravelS from './base/gravel__s.png';
+import GravelSE from './base/gravel__se.png';
+
 import City from './base/city__default.png';
 
 export const Assets = {
@@ -57,9 +80,34 @@ export const Assets = {
     S: GrassS,
     SE: GrassSE
   },
+  LightGround: {
+    Full: LightGroundFull,
+    NW: LightGroundNW,
+    N: LightGroundN,
+    NE: LightGroundNE,
+    W: LightGroundW,
+    E: LightGroundE,
+    SW: LightGroundSW,
+    S: LightGroundS,
+    SE: LightGroundSE
+  },
+  Gravel: {
+    Full: GravelFull,
+    NW: GravelNW,
+    N: GravelN,
+    NE: GravelNE,
+    W: GravelW,
+    E: GravelE,
+    SW: GravelSW,
+    S: GravelS,
+    SE: GravelSE
+  },
   Tree: {
     Pink: TreePink,
-    Green: TreeGreen
+    Green: TreeGreen,
+    Cactus: TreeCactus,
+    Purple: TreePurple,
+    Snowman: TreeSnowman
   },
   Ocean: {
     Full: OceanFull
