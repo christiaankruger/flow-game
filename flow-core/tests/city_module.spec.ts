@@ -30,10 +30,10 @@ describe('City Module', () => {
     });
 
     it('Should seed a BIG list of cities do not clash (Non Deterministic)', () => {
-      const cities = CityModule.SeedCities(200, dummyGame);
+      const cities = CityModule.SeedCities(50, dummyGame);
 
       expect(cities).toBeDefined();
-      expect(cities.length).toBe(200);
+      expect(cities.length).toBe(50);
 
       // Check no clashes
       // NOT DETERMINISTIC, but useful to know it's a goal
