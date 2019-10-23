@@ -63,6 +63,7 @@ export class GameMap {
     this.viewport
       .drag()
       .decelerate()
+      .clamp({ direction: 'all' })
       .wheel();
     this.app.stage.addChild(this.viewport);
   }
