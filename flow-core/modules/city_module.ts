@@ -1,6 +1,5 @@
 import { Module, ICity } from '../types';
 import { Game } from '../game';
-import { sampleSize, sample } from 'lodash';
 import { range } from 'ramda';
 import { allCities } from '../data/cities';
 
@@ -12,16 +11,30 @@ export class CityModule implements Module {
       name = sample(allCities)!;
     }
 
-    // Generate new coordinates
-    let row = sample(range(1)(game.grid.height + 1))!;
-    let column = sample(range(1)(game.grid.width + 1))!;
+    // let row = ROW
+    let row = sample(range(1)(game.grid.height - 1))!;
+    let column = sample(range(1)(game.grid.width - 1))!;
     while (
       existingCities.find(
         c => c.coordinates.row === row && c.coordinates.column === column
-      )
+      ) ||
+      existingCities.find(c => {
+        return (
+          distance(c, {
+            name: 'lazy',
+            coordinates: {
+              row,
+              column
+            }
+          }) <
+          // Expected value is 2/3k, which puts 10%-tile at 2/15k
+          (2 / 15) * game.grid.height
+        );
+      }) ||
+      !!game.grid.blocks[row][column].belongsTo
     ) {
-      row = sample(range(1, game.grid.height + 1))!;
-      column = sample(range(1, game.grid.width + 1))!;
+      row = sample(range(1)(game.grid.height - 1))!;
+      column = sample(range(1, game.grid.width - 1))!;
     }
 
     return {
@@ -44,3 +57,11 @@ export class CityModule implements Module {
 
   tick(game: Game) {}
 }
+
+const sample = (arr: any[]) => arr[Math.floor(Math.random() * arr.length)];
+const distance = (a: ICity, b: ICity) => {
+  let d =
+    Math.abs(a.coordinates.column - b.coordinates.column) +
+    Math.abs(a.coordinates.row - b.coordinates.row);
+  return d;
+};

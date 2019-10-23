@@ -40,9 +40,10 @@ export interface ICity {
 
 export interface IBlock {
   belongsTo?: BelongsToType;
+  terrain?: TerrainType;
 }
 
-export type BelongsToType = ByPlayer | ByCity | ByTerrain;
+export type BelongsToType = ByPlayer | ByCity | ByObstacle;
 
 export type ByPlayer = {
   playerId: string;
@@ -52,8 +53,16 @@ export type ByCity = {
   cityName: string;
 };
 
-export type ByTerrain = {
-  terrainType: 'mountain';
+export type TerrainType =
+  | 'grass'
+  | 'sand'
+  | 'ground'
+  | 'ice'
+  | 'light-ground'
+  | 'gravel';
+
+export type ByObstacle = {
+  obstacleType: 'ocean' | 'trees';
 };
 
 export interface IGrid {

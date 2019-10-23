@@ -249,4 +249,6 @@ Byllia
 Petrae
 Amphaistroy
 Smyra
-Stacuse`.split('\n');
+Stacuse`
+  .split('\n')
+  .filter(x => x.length <= 7);

@@ -1,0 +1,15 @@
+.flow-test {
+  display: flex;
+
+  &__pixi-root {
+    width: 50%;
+  }
+
+  &__react-root {
+    width: 50%;
+  }
+
+  &__code {
+    font-size: 11px;
+  }
+}
