@@ -12,13 +12,10 @@ export interface GameLoopProps {
   app: Application;
   viewport: Viewport;
   grid: Grid;
+  onClick: (i: number, j: number) => void;
 }
 
-export const pixiGameTick = (props: GameLoopProps) => {
-  buildGrid(props);
-};
-
-const buildGrid = (props: GameLoopProps) => {
+export const buildGridPixi = (props: GameLoopProps) => {
   const { viewport, app, grid } = props;
   viewport.removeChildren();
 
@@ -60,7 +57,22 @@ const buildGrid = (props: GameLoopProps) => {
           nameContainer.addChild(name);
           viewport.addChild(nameContainer);
         }
+      } else {
+        // Doesn't belong to anything, i.e. we can place a road if we want to
+        container.interactive = true;
+
+        container.addListener('mouseover', function() {
+          container.alpha = 0.8;
+        });
+        container.addListener('mouseout', () => {
+          container.alpha = 1;
+        });
+
+        container.addListener('click', () => {
+          props.onClick(i, j);
+        });
       }
+
       container.addChild(sprite);
       viewport.addChild(container);
     }

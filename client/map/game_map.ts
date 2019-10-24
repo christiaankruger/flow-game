@@ -1,8 +1,8 @@
-import { Application, Sprite, Texture, Container } from 'pixi.js';
+import { Application, Sprite, Texture, Container, Graphics } from 'pixi.js';
 import { Viewport } from 'pixi-viewport';
 import { DEFAULT_SQUARE_SIZE as DEFAULT_MAP_SIZE } from '../../flow-core/game';
 import { Grid } from '../../flow-core/grid';
-import { pixiGameTick } from './game_loop';
+import { buildGridPixi } from './game_loop';
 
 export interface GameMapProps {
   gridHeight: number;
@@ -27,6 +27,8 @@ export class GameMap {
   grid?: Grid;
   gridVersion: number = 0;
   drawnGridVersion: number = 0;
+
+  dragActive = false;
 
   constructor(
     gameMapProps: Partial<GameMapProps>,
@@ -65,6 +67,15 @@ export class GameMap {
       .decelerate()
       .clamp({ direction: 'all' })
       .wheel();
+
+    this.viewport.on('drag-start', () => {
+      this.dragActive = true;
+    });
+
+    this.viewport.on('drag-end', () => {
+      this.dragActive = false;
+    });
+
     this.app.stage.addChild(this.viewport);
   }
 
@@ -76,11 +87,18 @@ export class GameMap {
     this.app.ticker.add(delta => {
       if (this.grid) {
         if (this.drawnGridVersion !== this.gridVersion) {
-          pixiGameTick({
+          buildGridPixi({
             delta,
             grid: this.grid,
             app: this.app,
-            viewport: this.viewport
+            viewport: this.viewport,
+            onClick: (i: number, j: number) => {
+              // Guard against false positives
+              if (this.dragActive) {
+                return;
+              }
+              console.log(`Click ${i}, ${j}`);
+            }
           });
           this.drawnGridVersion = this.gridVersion;
         }
