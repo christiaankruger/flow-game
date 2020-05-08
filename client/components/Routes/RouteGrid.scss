@@ -1,0 +1,30 @@
+.flow-route-grid {
+  display: grid;
+  column-gap: 8px;
+  row-gap: 8px;
+
+  &__route-card {
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+
+    padding: 12px 8px;
+  }
+
+  &__route-card-directions {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__route-card-remaining {
+    font-size: 11px;
+  }
+
+  &__route-city-name {
+    &:hover {
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  }
+}

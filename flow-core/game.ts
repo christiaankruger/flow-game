@@ -3,8 +3,9 @@ import { Player } from './player';
 import { RouteModule } from './modules/route_module';
 import { Grid } from './grid';
 import { CityModule } from './modules/city_module';
+import { terrainGenerator } from './terrain_generator';
 
-export const DEFAULT_SQUARE_SIZE = 75;
+export const DEFAULT_SQUARE_SIZE = 50;
 
 export interface IModuleRegistration {
   name: string;
@@ -52,6 +53,10 @@ export class Game {
     this.grid.set(newBlock, row, column);
   }
 
+  addPlayer(player: Player) {
+    this.players.push(player);
+  }
+
   cityByName(name: string): ICity | undefined {
     return this.cities.find(c => c.name === name);
   }
@@ -70,15 +75,22 @@ export class Game {
   }
 }
 
-export const createGameWithSeeds = () => {
+export const createGameWithSeeds = (
+  numberOfCities = 12,
+  numberOfRoutes = 12
+) => {
   const game = new Game();
 
-  const cities = CityModule.SeedCities(5, game);
+  // 1. Generate terrains
+  terrainGenerator(game.grid);
+
+  // 2. Generate cities
+  const cities = CityModule.SeedCities(numberOfCities, game);
   for (let city of cities) {
     game.addCity(city);
   }
 
-  game.routes = RouteModule.SeedRoutes(3, game);
-
+  // 3. Generate routes
+  game.routes = RouteModule.SeedRoutes(numberOfRoutes, game);
   return game;
 };

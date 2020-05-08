@@ -2,10 +2,20 @@ import { Application, Container, Sprite, Texture, Text } from 'pixi.js';
 import { Viewport } from 'pixi-viewport';
 import { Assets } from './assets/assets';
 import { Grid } from '../../flow-core/grid';
-import { belongsToObstacle, belongsToCity } from '../../flow-core/util/misc';
+import {
+  belongsToObstacle,
+  belongsToCity,
+  belongsToPlayer
+} from '../../flow-core/util/misc';
 import { TerrainType, IBlock } from '../../flow-core/types';
 import ifElse from 'ramda/es/ifElse';
-import { fullTile, treeFor, oceanFull, city } from './util/misc';
+import {
+  fullTile,
+  treeFor,
+  oceanFull,
+  city,
+  roadIntersection
+} from './util/misc';
 
 export interface GameLoopProps {
   delta: number;
@@ -56,6 +66,8 @@ export const buildGridPixi = (props: GameLoopProps) => {
 
           nameContainer.addChild(name);
           viewport.addChild(nameContainer);
+        } else if (belongsToPlayer(block.belongsTo)) {
+          sprite.addChild(roadIntersection());
         }
       } else {
         // Doesn't belong to anything, i.e. we can place a road if we want to
@@ -69,7 +81,7 @@ export const buildGridPixi = (props: GameLoopProps) => {
         });
 
         container.addListener('click', () => {
-          props.onClick(i, j);
+          props.onClick(j, i);
         });
       }
 

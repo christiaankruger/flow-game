@@ -6,7 +6,9 @@ import { buildUnionFindPerPlayer } from '../grid_union_find';
 
 // Responsibilities:
 // Give I(r) to players
+// - Take Biome factors into account
 // Take O(r) from players
+// - Take Biome factors into account
 // Tick down on routes, expire them
 // Find routes nobody is building for, remove them
 // Generate new routes periodically
@@ -79,8 +81,10 @@ function doRouteIncomeAndExpenses(game: Game) {
 
     // Tick route down to expiry
     route.expiring_in -= count;
-    // TODO: Remove if 0
   }
+
+  // Remove all routes which have expired
+  game.routes = game.routes.filter(r => r.expiring_in > 0);
 
   // Expenses: $1 per block
   for (const playerId in map) {
@@ -125,8 +129,8 @@ export function distanceByCoordinates(
   coordinatesA: TCoordinates,
   coordinatesB: TCoordinates
 ): number {
-  const diffRows = Math.abs(coordinatesA.row - coordinatesB.column);
-  const diffColumns = Math.abs(coordinatesA.row - coordinatesB.column);
+  const diffRows = Math.abs(coordinatesA.row - coordinatesB.row);
+  const diffColumns = Math.abs(coordinatesA.column - coordinatesB.column);
   return diffRows + diffColumns;
 }
 

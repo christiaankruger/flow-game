@@ -27,12 +27,14 @@ export class GameMap {
   grid?: Grid;
   gridVersion: number = 0;
   drawnGridVersion: number = 0;
+  onClick: (i: number, j: number) => void = () => {};
 
   dragActive = false;
 
   constructor(
     gameMapProps: Partial<GameMapProps>,
-    viewportProps: ViewportProps
+    viewportProps: ViewportProps,
+    onClick: (i: number, j: number) => void
   ) {
     const { gridHeight, gridWidth, squareBlockSize } = Object.assign(
       {},
@@ -50,8 +52,9 @@ export class GameMap {
     });
 
     this.viewport = new Viewport({
-      screenWidth: viewportProps.screenHeight,
-      screenHeight: viewportProps.screenWidth,
+      // CONFIRM THAT THIS IS CORRECT
+      screenWidth: 800,
+      screenHeight: 900,
       worldWidth,
       worldHeight,
       // So that scrolling off-view doesn't make the viewport scroll
@@ -68,6 +71,8 @@ export class GameMap {
       .clamp({ direction: 'all' })
       .wheel();
 
+    // this.viewport.moveCenter()
+
     this.viewport.on('drag-start', () => {
       this.dragActive = true;
     });
@@ -77,6 +82,12 @@ export class GameMap {
     });
 
     this.app.stage.addChild(this.viewport);
+
+    this.onClick = onClick;
+  }
+
+  focusAtBlockCoordinates(i: number, j: number) {
+    this.viewport.moveCenter(j * DEFAULT_MAP_SIZE, i * DEFAULT_MAP_SIZE);
   }
 
   bindToRoot(rootElementId: string) {
@@ -97,7 +108,7 @@ export class GameMap {
               if (this.dragActive) {
                 return;
               }
-              console.log(`Click ${i}, ${j}`);
+              this.onClick(i, j);
             }
           });
           this.drawnGridVersion = this.gridVersion;

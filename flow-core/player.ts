@@ -1,7 +1,7 @@
 import { IPlayer, ITransaction, ICity } from './types';
 
 export class Player implements IPlayer {
-  private transactions: ITransaction[] = [];
+  transactions: ITransaction[] = [];
   id: string = '';
   name: string = '';
   color: string = '';

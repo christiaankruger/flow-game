@@ -20,6 +20,7 @@ export interface IPlayer {
   name: string;
   color: string;
   cities: ICity[];
+  transactions: ITransaction[];
 }
 
 export interface ITransaction {

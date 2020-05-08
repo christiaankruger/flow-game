@@ -38,6 +38,10 @@ export const iceFull = () => {
   return new Sprite(Texture.from(Assets.Ice.Full));
 };
 
+export const roadIntersection = () => {
+  return new Sprite(Texture.from(Assets.Road.Intersection));
+};
+
 export const rock = () => {
   const grass = grassFull();
   const rock = new Sprite(Texture.from(Assets.Rock));
@@ -128,104 +132,104 @@ const inRange = (x: number, lower: number, upper: number) =>
   lower <= x && x < upper;
 
 // PLEASE NOTE: This algorithm is by no means perfect and was supposed to be a POC
-export const direction = (grid: Grid, i: number, j: number) => {
-  const blocks = grid.blocks;
-  const base = blocks[i][j].terrain || 'grass';
+// export const direction = (grid: Grid, i: number, j: number) => {
+//   const blocks = grid.blocks;
+//   const base = blocks[i][j].terrain || 'grass';
 
-  if (i === 0 || j === 0 || i === grid.height - 1 || j === grid.width - 1) {
-    return {
-      direction: 'Full',
-      element: base
-    };
-  }
+//   if (i === 0 || j === 0 || i === grid.height - 1 || j === grid.width - 1) {
+//     return {
+//       direction: 'Full',
+//       element: base
+//     };
+//   }
 
-  const safeBlock = (x: number, y: number) => {
-    const xSafe = inRange(x, 0, grid.height);
-    const ySafe = inRange(y, 0, grid.height);
-    if (xSafe && ySafe) {
-      return blocks[x][y];
-    }
-    return undefined;
-  };
+//   const safeBlock = (x: number, y: number) => {
+//     const xSafe = inRange(x, 0, grid.height);
+//     const ySafe = inRange(y, 0, grid.height);
+//     if (xSafe && ySafe) {
+//       return blocks[x][y];
+//     }
+//     return undefined;
+//   };
 
-  const higherThan = (target?: string) => {
-    if (!target) {
-      return true;
-    }
-    return ORDER.indexOf(base) < ORDER.indexOf(target);
-  };
+//   const higherThan = (target?: string) => {
+//     if (!target) {
+//       return true;
+//     }
+//     return ORDER.indexOf(base) < ORDER.indexOf(target);
+//   };
 
-  const lowerEqualThan = (target?: string) => {
-    if (!target) {
-      return true;
-    }
-    return ORDER.indexOf(base) >= ORDER.indexOf(target);
-  };
+//   const lowerEqualThan = (target?: string) => {
+//     if (!target) {
+//       return true;
+//     }
+//     return ORDER.indexOf(base) >= ORDER.indexOf(target);
+//   };
 
-  const UL = safeOceanOrTerrain(safeBlock(i - 1, j - 1));
-  const U = safeOceanOrTerrain(safeBlock(i - 1, j));
-  const UR = safeOceanOrTerrain(safeBlock(i + 1, j + 1));
-  const L = safeOceanOrTerrain(safeBlock(i, j - 1));
-  const R = safeOceanOrTerrain(safeBlock(i, j + 1));
-  const DL = safeOceanOrTerrain(safeBlock(i + 1, j - 1));
-  const D = safeOceanOrTerrain(safeBlock(i + 1, j));
-  const DR = safeOceanOrTerrain(safeBlock(i + 1, j + 1));
+//   const UL = safeOceanOrTerrain(safeBlock(i - 1, j - 1));
+//   const U = safeOceanOrTerrain(safeBlock(i - 1, j));
+//   const UR = safeOceanOrTerrain(safeBlock(i + 1, j + 1));
+//   const L = safeOceanOrTerrain(safeBlock(i, j - 1));
+//   const R = safeOceanOrTerrain(safeBlock(i, j + 1));
+//   const DL = safeOceanOrTerrain(safeBlock(i + 1, j - 1));
+//   const D = safeOceanOrTerrain(safeBlock(i + 1, j));
+//   const DR = safeOceanOrTerrain(safeBlock(i + 1, j + 1));
 
-  if (higherThan(L)) {
-    if (higherThan(D)) {
-      if (lowerEqualThan(R)) {
-        return {
-          direction: 'SW',
-          element: L
-        };
-      }
-    }
-    if (higherThan(U)) {
-      if (lowerEqualThan(R)) {
-        return {
-          direction: 'NW',
-          element: L
-        };
-      }
-    }
-    return {
-      direction: 'W',
-      element: L
-    };
-  }
+//   if (higherThan(L)) {
+//     if (higherThan(D)) {
+//       if (lowerEqualThan(R)) {
+//         return {
+//           direction: 'SW',
+//           element: L
+//         };
+//       }
+//     }
+//     if (higherThan(U)) {
+//       if (lowerEqualThan(R)) {
+//         return {
+//           direction: 'NW',
+//           element: L
+//         };
+//       }
+//     }
+//     return {
+//       direction: 'W',
+//       element: L
+//     };
+//   }
 
-  if (higherThan(U)) {
-    if (higherThan(R)) {
-      if (lowerEqualThan(L)) {
-        return {
-          direction: 'NE',
-          element: U
-        };
-      }
-    }
-    return {
-      direction: 'N',
-      element: U
-    };
-  }
+//   if (higherThan(U)) {
+//     if (higherThan(R)) {
+//       if (lowerEqualThan(L)) {
+//         return {
+//           direction: 'NE',
+//           element: U
+//         };
+//       }
+//     }
+//     return {
+//       direction: 'N',
+//       element: U
+//     };
+//   }
 
-  if (higherThan(D)) {
-    if (higherThan(R)) {
-      return {
-        direction: 'SE',
-        element: D
-      };
-    }
-    return {
-      direction: 'S',
-      element: D
-    };
-  }
+//   if (higherThan(D)) {
+//     if (higherThan(R)) {
+//       return {
+//         direction: 'SE',
+//         element: D
+//       };
+//     }
+//     return {
+//       direction: 'S',
+//       element: D
+//     };
+//   }
 
-  if (higherThan(R)) {
-    return {
-      direction: 'E',
-      element: R
-    };
-  }
-};
+//   if (higherThan(R)) {
+//     return {
+//       direction: 'E',
+//       element: R
+//     };
+//   }
+// };

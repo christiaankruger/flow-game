@@ -66,6 +66,8 @@ import GravelSW from './base/gravel__sw.png';
 import GravelS from './base/gravel__s.png';
 import GravelSE from './base/gravel__se.png';
 
+import RoadIntersection from './base/road__intersection.png';
+
 import City from './base/city__default.png';
 
 export const Assets = {
@@ -101,6 +103,9 @@ export const Assets = {
     SW: GravelSW,
     S: GravelS,
     SE: GravelSE
+  },
+  Road: {
+    Intersection: RoadIntersection
   },
   Tree: {
     Pink: TreePink,
